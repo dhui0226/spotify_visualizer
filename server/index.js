@@ -1,9 +1,11 @@
 const express = require('express')
-const dotenv = require('dotenv');
+const dotenv = require('dotenv')
+const request = require('request')
 
 const port = 5000
 
 dotenv.config()
+const app = express();
 
 let spotify_client_id = process.env.SPOTIFY_CLIENT_ID
 let spotify_client_secret = process.env.SPOTIFY_CLIENT_SECRET
@@ -18,9 +20,10 @@ var generateRandomString = function (length) {
   return text;
 };
 
-const app = express();
+var access_token = ''
 
 app.get('/auth/login', (req, res) => {
+
   var scope = "streaming \
                user-read-email \
                user-read-private"
@@ -42,7 +45,7 @@ app.get('/auth/callback', (req, res) => {
   var code = req.query.code;
 
   var authOptions = {
-    url: 'https://accounts.spotify.com/api/token',
+    url: 'https://accounts.spotify.com/api/token', 
     form: {
       code: code,
       redirect_uri: "http://localhost:3000/auth/callback",
@@ -57,7 +60,9 @@ app.get('/auth/callback', (req, res) => {
 
   request.post(authOptions, function(error, response, body) {
     if (!error && response.statusCode === 200) {
-      var access_token = body.access_token;
+      access_token = body.access_token;
+
+      console.log('token', body)
       res.redirect('/')
     }
   });
