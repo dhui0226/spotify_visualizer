@@ -21,6 +21,10 @@ var generateRandomString = function (length) {
 };
 
 var access_token = ''
+const headers = {
+  Authorization: `Bearer ${access_token}`,
+  Accept: 'application/json'
+}
 
 app.get('/auth/login', (req, res) => {
 
@@ -73,6 +77,20 @@ app.get('/auth/token', (req, res) => {
      {
         access_token: access_token
      })
+})
+
+app.get('/auth/song', async (req, res) => {
+  const result = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+    headers: {
+      'Authorization' : 'Bearer ' + access_token
+    }
+  })
+
+  console.log(result)
+  const data = result.json()
+  console.log('ting', data)
+  return result
+  res.send(data)
 })
 
 app.listen(port, () => {

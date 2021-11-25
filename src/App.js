@@ -7,16 +7,15 @@ function App() {
 
   const [token, setToken] = useState('');
 
+  async function getToken() {
+    const response = await fetch('/auth/token');
+    console.log('response', response)
+    let json = await response.json();
+    console.log('json', json.access_token)
+    setToken(json.access_token);
+  }
+
   useEffect(() => {
-
-    async function getToken() {
-      const response = await fetch('/auth/token');
-      console.log('response', response)
-      const json = await response.json();
-      console.log(json, json.access_token)
-      setToken(json.access_token);
-    }
-
     getToken();
 
   }, []);
