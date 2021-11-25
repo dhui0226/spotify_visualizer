@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import querystring from 'querystring'
 
 function WebPlayback(props) {
+    const { token } = props
 
     const [player, setPlayer] = useState(undefined);
     const [song, setSong] = useState('')
@@ -20,6 +21,8 @@ function WebPlayback(props) {
     function refreshPage() {
         window.location.reload()
     }
+
+    console.log('pw', token)
 
     useEffect(() => {
 
@@ -50,8 +53,8 @@ function WebPlayback(props) {
             player.connect();
         };
 
-        async function getTing() {
-            const response = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
+        /*async function getTing() {
+            const response = await fetch('https://accounts.spotify.com/api/token', {
                 method: 'POST',
                 headers: {
                   Authorization: `Basic ${basic}`,
@@ -64,17 +67,19 @@ function WebPlayback(props) {
             });
             
             return response.json()
-        }
+        }*/
 
         async function getSong() {
-            const { access_token } = await getTing()
+            //const access_token = await getTing()
+            //console.log('access', access_token)
 
             const result = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
                 headers: {
-                    'Authorization' : `Bearer ${access_token}`
+                    'Authorization' : `Bearer ${token}`
                 }
             })
 
+            console.log('result', result)
             return result
         }
         
@@ -84,10 +89,11 @@ function WebPlayback(props) {
             if (response.status === 204 || response.status > 400) {
                 console.log('not playing')
             }
-    
-            const spotSong = response.json()
-            console.log('song', song)
+            
+            const spotSong = await response.json()
+            console.log('song', spotSong)
             setSong(spotSong)
+            console.log(song.item.id)
         }
 
         getSongTwo();
@@ -99,7 +105,8 @@ function WebPlayback(props) {
             <div className="container">
                 <div className="main-wrapper">
                     <button type="button" onClick={refreshPage}>Refresh</button>
-                    <h1>{song.title}</h1>
+                    <h1>{song.item.name}</h1>
+                    <h2>{song.item.id}</h2>
                 </div>
             </div>
         </>
