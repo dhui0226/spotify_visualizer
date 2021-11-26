@@ -6,9 +6,6 @@ function WebPlayback(props) {
     const [player, setPlayer] = useState(undefined);
     const [song, setSong] = useState('')
 
-    const client_id = '40f5d6def80648d69693afd51ee9362d'
-    const client_secret = '42e900f49b7a4aeaa9628538f8c39f09'
-
     useEffect(() => {
 
         const script = document.createElement("script");
@@ -38,39 +35,36 @@ function WebPlayback(props) {
             player.connect();
         };
 
-        async function getSong() {
+        async function getCurrentlyPlaying() {
             const result = await fetch('https://api.spotify.com/v1/me/player/currently-playing', {
                 headers: {
                     'Authorization' : `Bearer ${token}`
                 }
             })
 
-            console.log('result', result)
             return result
         }
-        
-        async function getSongTwo() {
-            const response = await getSong()
+
+        async function getSongInfo() {
+            const response = await getCurrentlyPlaying()
     
             if (response.status === 204 || response.status > 400) {
                 console.log('not playing')
             }
             
             const spotSong = await response.json()
-            console.log('song', spotSong)
             setSong(spotSong)
-            console.log(song.item.id)
+
+            console.log('song', spotSong)
         }
 
-        getSongTwo();
-
-    }, []);
+        getSongInfo()
+    }, [])
 
     return (
         <>
             <div className="container">
                 <div className="main-wrapper">
-                    <button type="button" onClick={refreshPage}>Refresh</button>
                     <h1>{song.item.name}</h1>
                     <h2>{song.item.id}</h2>
                 </div>
